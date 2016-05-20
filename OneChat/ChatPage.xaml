@@ -1,0 +1,124 @@
+﻿<Page
+    x:Class="OneChat.ChatPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:OneChat"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:OneChat.Model"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <model:BuffToImageConversion x:Key="ImageConvert"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="530"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TitleTextBlock.Margin" Value="25,0,0,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+            <TextBlock x:Name="TitleTextBlock" Text="OneChat" FontSize="20" VerticalAlignment="Center" Margin="73,0,0,0"></TextBlock>
+            <Button Name="OnlineButton" Style="{StaticResource HamburgerButtonStyle}" Content="&#xE8A4;" HorizontalAlignment="Right" Click="OnlineButton_Click" />
+        </Grid>
+        <SplitView x:Name="ContentSplitView" Grid.Row="1" PanePlacement="Right" OpenPaneLength="160" CompactPaneLength="0" DisplayMode="CompactOverlay">
+            <SplitView.Pane>
+                <ListBox Name="OnlineUserListBox" ItemsSource="{x:Bind ClientList}" SelectionMode="Single" Background="{ThemeResource SystemControlBackgroundAccentBrush}"  Foreground="{ThemeResource SystemControlForegroundAltHighBrush}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="model:OnlineUserInfo">
+                            <TextBlock FontSize="20" Text="{x:Bind Name}" TextWrapping="WrapWholeWords"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Pivot >
+                    <PivotItem Header="聊天" Margin="0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListView Name="MessageListBox" ItemsSource="{x:Bind MessageList}" SelectionMode="Single">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="model:MessageInfo">
+                                        <StackPanel Orientation="Horizontal" Padding="6">
+                                            <Image Name="MsgImage" Width="50" Height="50" Stretch="UniformToFill" Source="{x:Bind Bmp, Converter={StaticResource ImageConvert}}"/>
+                                            <StackPanel Margin="6,0">
+                                                <TextBlock Name="InformationTextBlock" RelativePanel.RightOf="MsgImage" FontSize="12" Foreground="Blue" Text="From:" Margin="0">
+                                                    <Run Text="{x:Bind Name}" FontSize="12" Foreground="Red"/>
+                                                    <Run Text="   Time:" FontSize="12"/>
+                                                    <Run Text="{x:Bind Time}" FontSize="12"/>
+                                                </TextBlock>
+                                                <TextBlock Text="{x:Bind Message}" FontSize="20"  TextWrapping="WrapWholeWords" IsTextSelectionEnabled="True"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Grid Grid.Row="1" Padding="6" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="ImgBtn" Content="&#xE723;" FontFamily="Segoe MDL2 Assets" FontSize="30" Width="60" Height="60" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <StackPanel>
+                                                <Image x:Name="SendImage" Height="100"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                    <Button x:Name="AddImgBtn" Content="添加" Width="50" Height="30" FontSize="12" Margin="0,0,10,0" Click="AddImgBtn_Click" Background="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+                                                    <Button x:Name="DelImgBtn" Content="移除" Width="50" Height="30" FontSize="12" Click="DelImgBtn_Click"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox x:Name="MessageTextBox" Margin="3,0,3,0" Height="80" Grid.Column="1"/>
+                                <Button x:Name="SendBtn" Content="&#xE724;" FontFamily="Segoe MDL2 Assets" FontSize="30" Grid.Column="2" Width="60" Height="60"  Background="{ThemeResource SystemControlBackgroundAccentBrush}" Click="SendBtn_Click"/>
+                            </Grid>
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem Header="设置" Margin="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="服务器IP：" Height="30" Margin="0,10,3,0" HorizontalAlignment="Right"/>
+                            <TextBox Name="RemoteIPTextBox"  Grid.Column="1" Margin="0" HorizontalAlignment="Left" FontSize="16" Height="30" Width="150" Text="192.168.13.1" MaxLength="15"/>
+                            <TextBlock Grid.Row="1" Text="端口：" HorizontalAlignment="Right" Height="30" Margin="0,10,3,0"/>
+                            <TextBox Name="RemotePortTextBox" Grid.Row="1" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Height="30" Width="150" Text="7070" MaxLength="5"/>
+                            <TextBlock Grid.Row="2" Text="用户名：" HorizontalAlignment="Right" Height="30" Margin="0,10,3,0"/>
+                            <TextBox Name="UserNameTextBox" Grid.Row="2" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Height="30" Width="150" MaxLength="15"/>
+                            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.Row="3" Margin="0">
+                                <ProgressRing Name="ConnectionProgressRing" Height="22" Width="22" Margin="20" Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+                                <Button Name="ConnectionButton" Content="连接" Width="70" Margin="0" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Click="ConnectionButton_Click"/>
+                                <Button Name="DisconnectionButton" Content="关闭" Width="70" Margin="0" Background="{ThemeResource SystemControlBackgroundAccentBrush}" Click="DisconnectionButton_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </PivotItem>
+                </Pivot>
+            </SplitView.Content>
+        </SplitView>
+    </Grid>
+</Page>
